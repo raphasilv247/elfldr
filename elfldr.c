@@ -175,7 +175,7 @@ elfldr_load(pid_t pid, const uint8_t *elf) {
     ctx.base_addr = min_vaddr;
     flags |= MAP_FIXED;
   } else {
-    LOG_PUTS("elfldr_load: ELF type not supported");
+    LOG_PUTS("elfldr_load: tipo de ELF não suportado");
     return 0;
   }
 
@@ -310,7 +310,7 @@ elfldr_payload_args(pid_t pid) {
   }
 
   if(kernel_overlap_sockets(pid, master_sock, victim_sock)) {
-    LOG_PUTS("kernel_overlap_sockets failed");
+    LOG_PUTS("kernel_overlap_sockets falhou");
     return 0;
   }
 
@@ -359,12 +359,12 @@ elfldr_prepare_exec(pid_t pid, const uint8_t *elf) {
   }
 
   if(!(entry=elfldr_load(pid, elf))) {
-    LOG_PUTS("elfldr_load failed");
+    LOG_PUTS("elfldr_load falhou");
     return -1;
   }
 
   if(!(args=elfldr_payload_args(pid))) {
-    LOG_PUTS("elfldr_payload_args failed");
+    LOG_PUTS("elfldr_payload_args falhou");
     return -1;
   }
 
@@ -447,23 +447,23 @@ elfldr_exec(pid_t pid, int stdio, const uint8_t* elf) {
   // backup privileges
   jaildir = kernel_get_proc_jaildir(pid);
   if(!(rootdir=kernel_get_proc_rootdir(pid))) {
-    LOG_PUTS("kernel_get_proc_rootdir failed");
+    LOG_PUTS("kernel_get_proc_rootdir falhou");
     pt_detach(pid, 0);
     return -1;
   }
   if(kernel_get_ucred_caps(pid, caps)) {
-    LOG_PUTS("kernel_get_ucred_caps failed");
+    LOG_PUTS("kernel_get_ucred_caps falhou");
     pt_detach(pid, 0);
     return -1;
   }
   if(!(authid=kernel_get_ucred_authid(pid))) {
-    LOG_PUTS("kernel_get_ucred_authid failed");
+    LOG_PUTS("kernel_get_ucred_authid falhou");
     pt_detach(pid, 0);
     return -1;
   }
 
   if(elfldr_raise_privileges(pid)) {
-    LOG_PUTS("Unable to raise privileges");
+    LOG_PUTS("Não foi possível elevar privilégios");
     pt_detach(pid, 0);
     return -1;
   }
@@ -488,20 +488,20 @@ elfldr_exec(pid_t pid, int stdio, const uint8_t* elf) {
 
   // restore privileges
   if(kernel_set_proc_jaildir(pid, jaildir)) {
-    LOG_PUTS("kernel_set_proc_jaildir failed");
+    LOG_PUTS("kernel_set_proc_jaildir falhou");
     error = -1;
   }
   if(kernel_set_proc_rootdir(pid, rootdir)) {
-    LOG_PUTS("kernel_set_proc_rootdir failed");
+    LOG_PUTS("kernel_set_proc_rootdir falhou");
     error = -1;
   }
 
   if(kernel_set_ucred_caps(pid, caps)) {
-    LOG_PUTS("kernel_set_ucred_caps failed");
+    LOG_PUTS("kernel_set_ucred_caps falhou");
     error = -1;
   }
   if(kernel_set_ucred_authid(pid, authid)) {
-    LOG_PUTS("kernel_set_ucred_authid failed");
+    LOG_PUTS("kernel_set_ucred_authid falhou");
     error = -1;
   }
 
@@ -651,13 +651,13 @@ elfldr_spawn(int stdio, char* const argv[], const uint8_t* elf, size_t payload_s
   // at the libkernel entry.
 
   if(!(libkernel_entry=kernel_dynlib_entry_addr(pid, 1))) {
-    LOG_PUTS("kernel_dynlib_entry_addr failed");
+    LOG_PUTS("kernel_dynlib_entry_addr falhou");
     pt_detach(pid, SIGKILL);
     return -1;
   }
 
   if(!(eboot_entry=kernel_dynlib_entry_addr(pid, 0))) {
-    LOG_PUTS("kernel_dynlib_entry_addr failed");
+    LOG_PUTS("kernel_dynlib_entry_addr falhou");
     pt_detach(pid, SIGKILL);
     return -1;
   }

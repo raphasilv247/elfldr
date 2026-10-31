@@ -45,31 +45,31 @@ main() {
   intptr_t vnode;
   int ret;
 
-  notify("Spawning elfldr.elf...");
-  LOG_PUTS("Spawning elfldr.elf...");
+  notify("Iniciando elfldr.elf...");
+  LOG_PUTS("Iniciando elfldr.elf...");
 
   if(elfldr_sanity_check(socksrv_elf, socksrv_elf_size)) {
-    LOG_PUTS("socksrv.elf is corrupted");
+    LOG_PUTS("socksrv.elf está corrompido");
     return -1;
   }
 
   // backup my privileges
   if(!(vnode=kernel_get_proc_rootdir(mypid))) {
-    LOG_PUTS("kernel_get_proc_rootdir failed");
+    LOG_PUTS("kernel_get_proc_rootdir falhou");
     return -1;
   }
   if(kernel_get_ucred_caps(mypid, caps)) {
-    LOG_PUTS("kernel_get_ucred_caps failed");
+    LOG_PUTS("kernel_get_ucred_caps falhou");
     return -1;
   }
   if(!(authid=kernel_get_ucred_authid(mypid))) {
-    LOG_PUTS("kernel_get_ucred_authid failed");
+    LOG_PUTS("kernel_get_ucred_authid falhou");
     return -1;
   }
 
   // launch socksrv.elf in a new processes
   if(elfldr_raise_privileges(mypid)) {
-    LOG_PUTS("Unable to raise privileges");
+    LOG_PUTS("Não foi possível elevar privilégios");
     ret = -1;
   } else {
     signal(SIGCHLD, SIG_IGN);
@@ -78,19 +78,19 @@ main() {
 
   // restore my privileges
   if(kernel_set_proc_jaildir(mypid, vnode)) {
-    LOG_PUTS("kernel_set_proc_jaildir failed");
+    LOG_PUTS("kernel_set_proc_jaildir falhou");
     ret = -1;
   }
   if(kernel_set_proc_rootdir(mypid, vnode)) {
-    LOG_PUTS("kernel_set_proc_rootdir failed");
+    LOG_PUTS("kernel_set_proc_rootdir falhou");
     ret = -1;
   }
   if(kernel_set_ucred_caps(mypid, caps)) {
-    LOG_PUTS("kernel_set_ucred_caps failed");
+    LOG_PUTS("kernel_set_ucred_caps falhou");
     ret = -1;
   }
   if(kernel_set_ucred_authid(mypid, authid)) {
-    LOG_PUTS("kernel_set_ucred_authid failed");
+    LOG_PUTS("kernel_set_ucred_authid falhou");
     ret = -1;
   }
 

@@ -244,35 +244,35 @@ on_connection(int fd) {
 
   if(recv(fd, &magic, sizeof(magic), MSG_PEEK | MSG_WAITALL) != sizeof(magic)) {
     LOG_PERROR("recv");
-    write(fd, "[elfldr.elf] Unknown payload format\n\r\0", 38);
+    write(fd, "[elfldr.elf] Formato de payload desconhecido\n\r\0", 47);
     return;
   }
 
   if(magic == PAYLOAD_MAGIC_URI_FILE || magic == PAYLOAD_MAGIC_URI_HTTP) {
     if(payload_readuri(fd, uri, PATH_MAX) || uri_get_content(uri, &buf, &len)) {
       LOG_PERROR("payload_readuri");
-      write(fd, "[elfldr.elf] Error reading URI payload\n\r\0", 41);
+      write(fd, "[elfldr.elf] Erro ao ler payload via URI\n\r\0", 43);
     }
 
   } else if(magic == PAYLOAD_MAGIC_HTTP_GET) {
     if(payload_readhttp(fd, uri, PATH_MAX) || uri_get_content(uri, &buf, &len)) {
       LOG_PERROR("payload_readhttp");
-      write(fd, "[elfldr.elf] Error reading HTTP payload\n\r\0", 42);
+      write(fd, "[elfldr.elf] Erro ao ler payload via HTTP\n\r\0", 44);
     }
 
   } else if(magic == PAYLOAD_MAGIC_ELF) {
     if(elfldr_read(fd, &buf, &len)) {
       LOG_PERROR("elfldr_read");
-      write(fd, "[elfldr.elf] Error reading ELF payload\n\r\0", 41);
+      write(fd, "[elfldr.elf] Erro ao ler payload ELF\n\r\0", 39);
     }
 
   } else if(magic == PAYLOAD_MAGIC_PS4_SELF || magic == PAYLOAD_MAGIC_PS5_SELF) {
     if(selfldr_read(fd, &buf, &len)) {
       LOG_PERROR("selfldr_read");
-      write(fd, "[elfldr.elf] Error reading SELF payload\n\r\0", 42);
+      write(fd, "[elfldr.elf] Erro ao ler payload SELF\n\r\0", 40);
     }
   } else {
-    write(fd, "[elfldr.elf] Unknown payload format\n\r\0", 38);
+    write(fd, "[elfldr.elf] Formato de payload desconhecido\n\r\0", 47);
   }
 
   if(buf) {
@@ -293,7 +293,7 @@ on_connection(int fd) {
     }
 
     if(payload_spawn(filename, args, fd, buf, len) < 0) {
-      write(fd, "[elfldr.elf] Error spawning payload\n\r\0", 38);
+      write(fd, "[elfldr.elf] Erro ao iniciar payload\n\r\0", 39);
     }
     free(filename);
     free(pipe);
@@ -404,7 +404,7 @@ int main() {
   int port = 9021;
   pid_t pid;
 
-  LOG_PRINTF("Socket server was compiled at %s %s\n", __DATE__, __TIME__);
+  LOG_PRINTF("Servidor de socket compilado em %s %s\n", __DATE__, __TIME__);
 
   if(chdir("/")) {
     LOG_PERROR("chdir");
@@ -424,7 +424,7 @@ int main() {
   signal(SIGCHLD, SIG_IGN);
   signal(SIGPIPE, SIG_IGN);
 
-  notify_address("Serving ELF loader on", port);
+  notify_address("Servindo ELF loader em", port);
   while(1) {
     serve_elfldr(port);
     sleep(3);

@@ -38,47 +38,47 @@ main() {
   pid_t vpid;
   int ret;
 
-  notify("Bootstrapping elfldr.elf...");
-  LOG_PUTS("Bootstrapping elfldr.elf...");
+  notify("Inicializando elfldr.elf...");
+  LOG_PUTS("Inicializando elfldr.elf...");
 
   if(elfldr_sanity_check(bootstrap_elf, bootstrap_elf_size)) {
-    LOG_PUTS("bootstrap.elf is corrupted");
+    LOG_PUTS("bootstrap.elf está corrompido");
     return -1;
   }
 
   // enable debugging with ptrace
   if(kernel_get_qaflags(qa_flags)) {
-    LOG_PUTS("kernel_get_qa_flags failed");
+    LOG_PUTS("kernel_get_qa_flags falhou");
     return -1;
   }
   if(!(qa_flags[1] & 0x03)) {
     qa_flags[1] |= 0x03;
     if(kernel_set_qaflags(qa_flags)) {
-      LOG_PUTS("kernel_set_qa_flags failed");
+      LOG_PUTS("kernel_set_qa_flags falhou");
       return -1;
     }
   }
 
   // backup my privileges
   if(!(vnode=kernel_get_proc_rootdir(mypid))) {
-    LOG_PUTS("kernel_get_proc_rootdir failed");
+    LOG_PUTS("kernel_get_proc_rootdir falhou");
     return -1;
   }
   if(kernel_get_ucred_caps(mypid, caps)) {
-    LOG_PUTS("kernel_get_ucred_caps failed");
+    LOG_PUTS("kernel_get_ucred_caps falhou");
     return -1;
   }
   if(!(authid=kernel_get_ucred_authid(mypid))) {
-    LOG_PUTS("kernel_get_ucred_authid failed");
+    LOG_PUTS("kernel_get_ucred_authid falhou");
     return -1;
   }
 
   // launch bootstrap.elf inside SceRedisServer
   if((vpid=elfldr_find_pid("SceRedisServer")) < 0) {
-    LOG_PUTS("elfldr_find_pid failed");
+    LOG_PUTS("elfldr_find_pid falhou");
     return -1;
   } else if(elfldr_raise_privileges(mypid)) {
-    LOG_PUTS("Unable to raise privileges");
+    LOG_PUTS("Não foi possível elevar privilégios");
     ret = -1;
   } else if(pt_attach(vpid)) {
     LOG_PERROR("pt_attach");
@@ -89,19 +89,19 @@ main() {
 
   // restore my privileges
   if(kernel_set_proc_jaildir(mypid, vnode)) {
-    LOG_PUTS("kernel_set_proc_jaildir failed");
+    LOG_PUTS("kernel_set_proc_jaildir falhou");
     ret = -1;
   }
   if(kernel_set_proc_rootdir(mypid, vnode)) {
-    LOG_PUTS("kernel_set_proc_rootdir failed");
+    LOG_PUTS("kernel_set_proc_rootdir falhou");
     ret = -1;
   }
   if(kernel_set_ucred_caps(mypid, caps)) {
-    LOG_PUTS("kernel_set_ucred_caps failed");
+    LOG_PUTS("kernel_set_ucred_caps falhou");
     ret = -1;
   }
   if(kernel_set_ucred_authid(mypid, authid)) {
-    LOG_PUTS("kernel_set_ucred_authid failed");
+    LOG_PUTS("kernel_set_ucred_authid falhou");
     ret = -1;
   }
 
